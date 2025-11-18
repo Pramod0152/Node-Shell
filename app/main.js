@@ -11,9 +11,14 @@ function prompt() {
     if (command.trim() === "exit 0") {
       rl.close();
       process.exit(0);
+    } else if (command.startsWith("echo ")) {
+      const args = command.slice(5).trim();
+      console.log(args);
+      prompt();
+    } else {
+      console.log(`${command}: command not found`);
+      prompt();
     }
-    console.log(`${command}: command not found`);
-    prompt(); // call next prompt AFTER user input
   });
 }
 
