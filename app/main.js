@@ -3,6 +3,7 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
+const os = require("os");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -50,7 +51,14 @@ function pwdcmd() {
 
 function cdcmd(...args) {
   try {
-    process.chdir(args[0]);
+    if (args[0] === `~`) {
+      const homeDir = os.homedir();
+      process.chdir(homeDir);
+      return;
+    } else {
+      process.chdir(args[0]);
+      return;
+    }
   } catch (e) {
     console.log(`cd: ${args[0]}: No such file or directory`);
   }
