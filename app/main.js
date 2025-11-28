@@ -48,11 +48,20 @@ function pwdcmd() {
   console.log(process.cwd());
 }
 
+function cdcmd(...args) {
+  try {
+    process.chdir(args[0]);
+  } catch (e) {
+    console.log(`cd: ${args[0]}: No such file or directory`);
+  }
+}
+
 const builtInCommands = {
   type: typecmd,
   echo: echocmd,
   exit: exitcmd,
   pwd: pwdcmd,
+  cd: cdcmd,
 };
 
 function REPL() {
