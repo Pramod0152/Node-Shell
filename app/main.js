@@ -44,10 +44,15 @@ function typecmd(...args) {
   }
 }
 
+function pwdcmd() {
+  console.log(process.cwd());
+}
+
 const builtInCommands = {
   type: typecmd,
   echo: echocmd,
   exit: exitcmd,
+  pwd: pwdcmd,
 };
 
 function REPL() {
