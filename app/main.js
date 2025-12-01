@@ -10,6 +10,48 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+function tokenize(line) {
+  const args = [];
+  let current = "";
+  let inSingle = false;
+  let tokenStarted = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+
+    if (ch === "'" && !inSingle) {
+      inSingle = true;
+      tokenStarted = true;
+      continue;
+    }
+
+    if (ch === "'" && inSingle) {
+      inSingle = false;
+      tokenStarted = true;
+      continue;
+    }
+
+    // Unquoted whitespace ends the current token
+    if (!inSingle && /\s/.test(ch)) {
+      if (tokenStarted) {
+        args.push(current);
+        current = "";
+        tokenStarted = false;
+      }
+      continue;
+    }
+
+    // Normal char
+    current += ch;
+    tokenStarted = true;
+  }
+
+  // Push last token
+  if (tokenStarted) args.push(current);
+
+  return args;
+}
+
 function exitcmd(...args) {
   rl.close();
   process.exit(0);
@@ -74,18 +116,23 @@ const builtInCommands = {
 
 function REPL() {
   rl.question("$ ", (command) => {
-    const answer = command.split(" ");
-    if (answer[0] in builtInCommands) {
-      builtInCommands[answer[0]](...answer.slice(1));
+    const tokens = tokenize(command);
+
+    if (tokens.length === 0) {
+      return REPL();
+    }
+
+    if (tokens[0] in builtInCommands) {
+      builtInCommands[tokens[0]](...tokens.slice(1));
       return REPL();
     } else {
-      const child = spawn(answer[0], answer.slice(1));
+      const child = spawn(tokens[0], tokens.slice(1));
       child.stdout.on("data", (data) => {
         process.stdout.write(data);
       });
 
       child.on("error", () => {
-        console.log(`${answer[0]}: command not found`);
+        console.log(`${tokens[0]}: command not found`);
         return REPL();
       });
 
