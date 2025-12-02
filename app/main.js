@@ -14,18 +14,35 @@ function tokenize(line) {
   const args = [];
   let current = "";
   let inSingle = false;
+  let inDouble = false;
   let tokenStarted = false;
 
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
 
-    if (ch === "'" && !inSingle) {
+    if (ch === '"' && !inDouble) {
+      inDouble = true;
+      tokenStarted = true;
+      continue;
+    }
+
+    if (ch === '"' && inDouble) {
+      inDouble = false;
+      tokenStarted = true;
+      continue;
+    }
+
+    if (ch === "'" && inDouble) {
+      current += ch;
+      continue;
+    }
+    if (ch === "'" && !inDouble && !inSingle) {
       inSingle = true;
       tokenStarted = true;
       continue;
     }
 
-    if (ch === "'" && inSingle) {
+    if (ch === "'" && inSingle && !inDouble) {
       inSingle = false;
       tokenStarted = true;
       continue;
