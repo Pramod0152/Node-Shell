@@ -49,7 +49,7 @@ function tokenize(line) {
     }
 
     // Unquoted whitespace ends the current token
-    if (!inSingle && /\s/.test(ch)) {
+    if (!inSingle && !inDouble && /\s/.test(ch)) {
       if (tokenStarted) {
         args.push(current);
         current = "";
